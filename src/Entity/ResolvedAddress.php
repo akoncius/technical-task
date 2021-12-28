@@ -3,12 +3,14 @@
 namespace App\Entity;
 
 use App\Repository\ResolvedAddressRepository;
+use App\ValueObject\Coordinates;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 
 /**
  * @ORM\Entity(repositoryClass=ResolvedAddressRepository::class)
  * @ORM\Table(indexes={
- *     @ORM\Index(name="search_idx", columns={"country_code", "city", "street", "postcode"})
+ *     @ORM\Index(name="search_idx", columns={"country", "city", "street", "postcode"})
  * })
  */
 class ResolvedAddress
@@ -18,53 +20,51 @@ class ResolvedAddress
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
-
-    /**
-     * @ORM\Column(type="string", length=3)
-     */
-    private $countryCode;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $city;
+    private ?string $country = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $street;
+    private ?string $city = null;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private ?string $street = null;
 
     /**
      * @ORM\Column(type="string", length=16)
      */
-    private $postcode;
+    private ?string $postcode = null;
 
     /**
      * @ORM\Column(type="string", length=32, nullable=true)
      */
-    private $lat;
+    private ?float $lat = null;
 
     /**
      * @ORM\Column(type="string", length=32, nullable=true)
      */
-    private $lng;
+    private ?float $lng = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getCountryCode(): ?string
+    public function getCountry(): ?string
     {
-        return $this->countryCode;
+        return $this->country;
     }
 
-    public function setCountryCode(string $countryCode): self
+    public function setCountry(?string $country): void
     {
-        $this->countryCode = $countryCode;
-
-        return $this;
+        $this->country = $country;
     }
 
     public function getCity(): ?string
@@ -72,11 +72,9 @@ class ResolvedAddress
         return $this->city;
     }
 
-    public function setCity(string $city): self
+    public function setCity(?string $city): void
     {
         $this->city = $city;
-
-        return $this;
     }
 
     public function getStreet(): ?string
@@ -84,11 +82,9 @@ class ResolvedAddress
         return $this->street;
     }
 
-    public function setStreet(string $street): self
+    public function setStreet(?string $street): void
     {
         $this->street = $street;
-
-        return $this;
     }
 
     public function getPostcode(): ?string
@@ -96,34 +92,29 @@ class ResolvedAddress
         return $this->postcode;
     }
 
-    public function setPostcode(string $postcode): self
+    public function setPostcode(?string $postcode): void
     {
         $this->postcode = $postcode;
-
-        return $this;
     }
 
-    public function getLat(): ?string
+    #[Pure] public function getCoordinates(): ?Coordinates
     {
-        return $this->lat;
+        $coordinates = null;
+
+        if ($this->lng !== null && $this->lat !== null) {
+            $coordinates = new Coordinates($this->lat, $this->lng);
+        }
+
+        return $coordinates;
     }
 
-    public function setLat(?string $lat): self
+    public function setCoordinates(?Coordinates $coordinates): void
     {
-        $this->lat = $lat;
-
-        return $this;
-    }
-
-    public function getLng(): ?string
-    {
-        return $this->lng;
-    }
-
-    public function setLng(?string $lng): self
-    {
-        $this->lng = $lng;
-
-        return $this;
+        if ($coordinates !== null) {
+            $this->lat = $coordinates->getLat();
+            $this->lng = $coordinates->getLng();
+        } else {
+            $this->lat = $this->lng = null;
+        }
     }
 }

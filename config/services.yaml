@@ -4,6 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    googlemaps.apikey: '%env(resolve:GOOGLE_GEOCODING_API_KEY)%'
+    hereapimaps.apikey: '%env(resolve:HEREMAPS_GEOCODING_API_KEY)%'
 
 services:
     # default configuration for services in *this* file
@@ -19,7 +21,9 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+            - '../src/ValueObject'
             - '../src/Tests/'
+            - '../src/Service'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -29,3 +33,57 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Repository\AddressResolverInterface: '@App\Repository\ResolvedAddressRepository'
+    Psr\Container\ContainerInterface: '@service_container'
+    Psr\Http\Client\ClientInterface: '@psr18.http_client'
+
+    App\Service\GeocoderCollectionInterface:
+        class: App\Service\GeocoderCollection
+        arguments:
+            - !tagged_iterator { tag: 'geocoder.handler', index_by: 'key' }
+
+    geocoder.decorator.google:
+        class: App\Service\Geocoder\HttpDecorator\GoogleHttpDecorator
+        arguments:
+            $apiKey: '%googlemaps.apikey%'
+
+    geocoder.decorator.hereapi:
+        class: App\Service\Geocoder\HttpDecorator\HereapiHttpDecorator
+        arguments:
+            $apiKey: '%hereapimaps.apikey%'
+
+    geocoder.httprequest.google:
+        class: App\Service\Geocoder\HttpRequestGeocoder
+        arguments:
+            $geocoderDecorator: '@geocoder.decorator.google'
+
+    geocoder.httprequest.hereapi:
+        class: App\Service\Geocoder\HttpRequestGeocoder
+        arguments:
+            $geocoderDecorator: '@geocoder.decorator.hereapi'
+
+    geocoder.array:
+        class: App\Service\Geocoder\ArrayGeocoder
+        arguments:
+            $geocoders: ['@geocoder.httprequest.google', '@geocoder.httprequest.hereapi']
+
+    geocoder.dbcached.array:
+        class: App\Service\Geocoder\DbCachedGeocoder
+        arguments:
+            $geocoder: '@geocoder.array'
+        tags:
+            - { name: 'geocoder.handler', key: 'geocoder.dbcached.array' }
+
+    geocoder.dbcached.google:
+        class: App\Service\Geocoder\DbCachedGeocoder
+        arguments:
+            $geocoder: '@geocoder.httprequest.google'
+        tags:
+            - { name: 'geocoder.handler', key: 'geocoder.dbcached.google' }
+
+    geocoder.dbcached.hereapi:
+        class: App\Service\Geocoder\DbCachedGeocoder
+        arguments:
+            $geocoder: '@geocoder.httprequest.hereapi'
+        tags:
+            - { name: 'geocoder.handler', key: 'geocoder.dbcached.hereapi' }
