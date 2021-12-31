@@ -15,7 +15,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method ResolvedAddress[]    findAll()
  * @method ResolvedAddress[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ResolvedAddressRepository extends ServiceEntityRepository
+class ResolvedAddressRepository extends ServiceEntityRepository implements AddressResolverInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -25,29 +25,26 @@ class ResolvedAddressRepository extends ServiceEntityRepository
     public function getByAddress(Address $address): ?ResolvedAddress
     {
         return $this->findOneBy([
-            'countryCode' => $address->getCountry(),
+            'country' => $address->getCountry(),
             'city' => $address->getCity(),
             'street' => $address->getStreet(),
             'postcode' => $address->getPostcode()
         ]);
     }
 
-    public function saveResolvedAddress(Address $address, ?Coordinates $coordinates): void
+    public function saveResolvedAddress(Address $address, ?Coordinates $coordinates): ResolvedAddress
     {
         $resolvedAddress = new ResolvedAddress();
-        $resolvedAddress
-            ->setCountryCode($address->getCountry())
-            ->setCity($address->getCity())
-            ->setStreet($address->getStreet())
-            ->setPostcode($address->getPostcode());
+        $resolvedAddress->setCountry($address->getCountry());
+        $resolvedAddress->setCity($address->getCity());
+        $resolvedAddress->setStreet($address->getStreet());
+        $resolvedAddress->setPostcode($address->getPostcode());
+        $resolvedAddress->setCoordinates($coordinates);
 
-        if ($coordinates !== null) {
-            $resolvedAddress
-                ->setLat((string) $coordinates->getLat())
-                ->setLng((string) $coordinates->getLng());
-        }
+        $em = $this->getEntityManager();
+        $em->persist($resolvedAddress);
+        $em->flush();
 
-        $this->getEntityManager()->persist($resolvedAddress);
-        $this->getEntityManager()->flush();
+        return $resolvedAddress;
     }
 }
