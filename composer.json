@@ -21,14 +21,19 @@
         "symfony/yaml": "5.2.*"
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.33"
+        "phpunit/phpunit": "*",
+        "symfony/maker-bundle": "^1.33",
+        "symfony/test-pack": "*"
     },
     "config": {
         "optimize-autoloader": true,
         "preferred-install": {
             "*": "dist"
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "symfony/flex": false
+        }
     },
     "autoload": {
         "psr-4": {

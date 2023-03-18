@@ -27,5 +27,34 @@ services:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    app.geocode.db_cache:
+        class: App\Service\GeocodeDbCache
+        arguments: [ '@App\Repository\ResolvedAddressRepository' ]
+
+    app.geocoder.gmaps:
+        class: App\Service\GmapsGeocoder
+        arguments: [ '%env(GOOGLE_GEOCODING_API_KEY)%' ]
+
+    app.geocoder.hmaps:
+        class: App\Service\HmapsGeocoder
+        arguments: [ '%env(HEREMAPS_GEOCODING_API_KEY)%' ]
+
+    app.geochain.default:
+        class: App\Helper\DefaultGeocoderChain
+        arguments:
+            - '@app.geocoder.hmaps'
+            - '@app.geocoder.gmaps'
+            - '@App\Service\DummyGeocoder'
+
+    app.geochain.dummy:
+        class: App\Helper\DefaultGeocoderChain
+        arguments:
+            - '@App\Service\DummyGeocoder'
+
+    App\Helper\GeocoderChainInterface: '@app.geochain.default'
+
+    App\Service\GeocoderService:
+        class: App\Service\GeocoderService
+        arguments: [ '@app.geochain.default' ]
+        calls:
+            - useGeocodeCache: [ '@app.geocode.db_cache' ]
