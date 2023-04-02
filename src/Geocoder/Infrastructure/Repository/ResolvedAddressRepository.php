@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Repository;
+declare(strict_types=1);
 
-use App\Entity\ResolvedAddress;
-use App\ValueObject\Address;
-use App\ValueObject\Coordinates;
+namespace App\Geocoder\Infrastructure\Repository;
+
+use App\Contracts\Geocoder\ValueObject\Address;
+use App\Contracts\Geocoder\ValueObject\Coordinates;
+use App\Geocoder\Infrastructure\Entity\ResolvedAddress;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**

@@ -1,0 +1,15 @@
+parameters:
+    heremaps.apikey: '%env(resolve:HEREMAPS_GEOCODING_API_KEY)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    here_maps_geocoder:
+        class: App\HereMaps\Domain\Service\Geocoder\HereMapsGeocoder
+        tags: [ 'geocoders_collection' ]
+
+    App\HereMaps\Domain\Service\HereMapsRequestProvider:
+        arguments:
+            $apiKey: '%heremaps.apikey%'

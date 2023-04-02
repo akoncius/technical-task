@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Entity;
+declare(strict_types=1);
 
-use App\Repository\ResolvedAddressRepository;
+namespace App\Geocoder\Infrastructure\Entity;
+
+use App\Geocoder\Infrastructure\Repository\ResolvedAddressRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -21,7 +23,7 @@ class ResolvedAddress
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=3)
+     * @ORM\Column(type="string", length=50)
      */
     private $countryCode;
 

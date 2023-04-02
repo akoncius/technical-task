@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Repository\ResolvedAddressRepository;
-use App\Service\GeocoderInterface;
-use App\ValueObject\Address;
+use App\Contracts\Geocoder\GeocoderInterface;
+use App\Contracts\Geocoder\ValueObject\Address;
 use GuzzleHttp\Client;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,7 +27,7 @@ class CoordinatesController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function geocodeAction(Request $request, ResolvedAddressRepository $repository): Response
+    public function geocodeAction(Request $request): Response
     {
         $country = $request->get('countryCode', 'lt');
         $city = $request->get('city', 'vilnius');
@@ -37,15 +36,11 @@ class CoordinatesController extends AbstractController
 
         $address = new Address($country, $city, $street, $postcode);
 
-        $row = $repository->getByAddress($address);
-
         $coordinates = $this->geocoder->geocode($address);
 
         if (null === $coordinates) {
             return new JsonResponse([]);
         }
-
-        $repository->saveResolvedAddress($address, $coordinates);
 
         return new JsonResponse(['lat' => $coordinates->getLat(), 'lng' => $coordinates->getLng()]);
     }

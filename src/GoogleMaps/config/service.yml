@@ -1,0 +1,15 @@
+parameters:
+    googlemaps.apikey: '%env(resolve:GOOGLE_GEOCODING_API_KEY)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    google_maps_geocoder:
+        class: App\GoogleMaps\Domain\Service\Geocoder\GoogleMapsGeocoder
+        tags: [ 'geocoders_collection' ]
+
+    App\GoogleMaps\Domain\Service\GoogleMapsRequestProvider:
+        arguments:
+            $apiKey: '%googlemaps.apikey%'

@@ -17,10 +17,12 @@
         "symfony/dotenv": "5.2.*",
         "symfony/flex": "^1.3.1",
         "symfony/framework-bundle": "5.2.*",
+        "symfony/http-client": "^5.4",
         "symfony/proxy-manager-bridge": "5.2.*",
         "symfony/yaml": "5.2.*"
     },
     "require-dev": {
+        "phpunit/phpunit": "*",
         "symfony/maker-bundle": "^1.33"
     },
     "config": {

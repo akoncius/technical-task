@@ -1,0 +1,13 @@
+services:
+    geocoders_collection:
+        class: App\Geocoder\Domain\Service\Geocoder\GeocodersCollection
+        arguments:
+            $geoCoders: !tagged_iterator { tag: 'geocoders_collection' }
+
+    App\Contracts\Geocoder\GeocoderInterface:
+        class: App\Geocoder\Domain\Service\Geocoder\DbCachedGeocoder
+        arguments:
+            $repository: '@App\Geocoder\Infrastructure\Repository\ResolvedAddressRepository'
+            $geocoder: '@geocoders_collection'
+
+    App\Geocoder\Infrastructure\Repository\ResolvedAddressRepository:
