@@ -1,5 +1,5 @@
-controllers:
-    resource: ../../src/Controller/
+geo_coordinate_controllers:
+    resource: ../../src/Module/GeoCoordinate/Controller/
     type: annotation
 
 kernel:

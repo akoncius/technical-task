@@ -1,0 +1,28 @@
+services:
+  App\Module\GeoCoordinate\:
+    resource: '%kernel.project_dir%/src/Module/GeoCoordinate/*'
+    exclude: '%kernel.project_dir%/src/Module/GeoCoordinate/{Entity,ValueObject,Message}'
+    public: true
+    autowire: true
+    autoconfigure: true
+
+  App\Module\GeoCoordinate\Proxy\GeoCoderProxy:
+    class: App\Module\GeoCoordinate\Proxy\GeoCoderProxy
+    public: true
+    arguments:
+      - '@App\Module\GeoCoordinate\Service\CompositeGeoCoderService'
+      - '@App\Module\GeoCoordinate\Repository\ResolvedAddressRepositoryInterface'
+      - '@App\Module\GeoCoordinate\Factory\CoordinatesFactory'
+
+  App\Module\GeoCoordinate\Service\CompositeGeoCoderService:
+    public: true
+    class: App\Module\GeoCoordinate\Service\CompositeGeoCoderService
+    arguments:
+      - [
+        '@App\Module\GeoCoordinate\Service\GoogleMapsService',
+        '@App\Module\GeoCoordinate\Service\HereMapsService'
+      ]
+      - '@App\Module\GeoCoordinate\Repository\ResolvedAddressRepositoryInterface'
+
+  App\Module\GeoCoordinate\Service\GeocoderInterface:
+    alias: App\Module\GeoCoordinate\Proxy\GeoCoderProxy

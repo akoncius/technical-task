@@ -1,0 +1,16 @@
+framework:
+    messenger:
+#        failure_transport: failed
+
+        transports:
+#            failed: '%env(MESSENGER_FAILURE_TRANSPORT_DSN)%'
+#            async: '%env(MESSENGER_TRANSPORT_DSN)%'
+            sync: 'sync://'
+
+        routing:
+            'App\Shared\Messenger\SyncMessageInterface': sync
+#            'App\Shared\Messenger\AsyncMessageInterface': async
+
+        default_bus: query_bus
+        buses:
+            query_bus:

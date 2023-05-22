@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Repository;
+declare(strict_types=1);
 
-use App\Entity\ResolvedAddress;
-use App\ValueObject\Address;
-use App\ValueObject\Coordinates;
+namespace App\Module\GeoCoordinate\Repository;
+
+use App\Module\GeoCoordinate\Entity\ResolvedAddress;
+use App\Module\GeoCoordinate\ValueObject\Address;
+use App\Module\GeoCoordinate\ValueObject\Coordinates;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -15,24 +16,24 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method ResolvedAddress[]    findAll()
  * @method ResolvedAddress[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ResolvedAddressRepository extends ServiceEntityRepository
+class ResolvedAddressRepository extends ServiceEntityRepository implements ResolvedAddressRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, ResolvedAddress::class);
     }
 
-    public function getByAddress(Address $address): ?ResolvedAddress
+    public function findByAddress(Address $address): ?ResolvedAddress
     {
         return $this->findOneBy([
             'countryCode' => $address->getCountry(),
             'city' => $address->getCity(),
             'street' => $address->getStreet(),
-            'postcode' => $address->getPostcode()
+            'postcode' => $address->getPostcode(),
         ]);
     }
 
-    public function saveResolvedAddress(Address $address, ?Coordinates $coordinates): void
+    public function save(Address $address, ?Coordinates $coordinates): bool
     {
         $resolvedAddress = new ResolvedAddress();
         $resolvedAddress
@@ -41,7 +42,7 @@ class ResolvedAddressRepository extends ServiceEntityRepository
             ->setStreet($address->getStreet())
             ->setPostcode($address->getPostcode());
 
-        if ($coordinates !== null) {
+        if (null !== $coordinates) {
             $resolvedAddress
                 ->setLat((string) $coordinates->getLat())
                 ->setLng((string) $coordinates->getLng());
@@ -49,5 +50,7 @@ class ResolvedAddressRepository extends ServiceEntityRepository
 
         $this->getEntityManager()->persist($resolvedAddress);
         $this->getEntityManager()->flush();
+
+        return true;
     }
 }

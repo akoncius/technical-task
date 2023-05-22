@@ -1,13 +1,17 @@
 <?php
 
-namespace App\Entity;
+declare(strict_types=1);
 
-use App\Repository\ResolvedAddressRepository;
+namespace App\Module\GeoCoordinate\Entity;
+
+use App\Module\GeoCoordinate\Repository\ResolvedAddressRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=ResolvedAddressRepository::class)
+ *
  * @ORM\Table(indexes={
+ *
  *     @ORM\Index(name="search_idx", columns={"country_code", "city", "street", "postcode"})
  * })
  */
@@ -15,7 +19,9 @@ class ResolvedAddress
 {
     /**
      * @ORM\Id
+     *
      * @ORM\GeneratedValue
+     *
      * @ORM\Column(type="integer")
      */
     private $id;

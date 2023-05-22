@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd" backupGlobals="false" colors="true" bootstrap="config/bootstrap.php">
+  <coverage>
+    <report>
+      <html outputDirectory="build/coverage"/>
+      <text outputFile="build/coverage.txt"/>
+    </report>
+  </coverage>
+  <php>
+    <ini name="error_reporting" value="-1"/>
+    <env name="KERNEL_CLASS" value="App\Kernel"/>
+    <env name="SHELL_VERBOSITY" value="-1"/>
+    <env name="APP_ENV" value="test"/>
+    <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
+    <ini name="memory_limit" value="900M"/>
+  </php>
+  <testsuites>
+    <testsuite name="unit">
+      <directory>tests</directory>
+    </testsuite>
+  </testsuites>
+  <source>
+    <include>
+      <directory>src</directory>
+    </include>
+  </source>
+</phpunit>

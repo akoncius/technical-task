@@ -1,0 +1,15 @@
+framework:
+    cache:
+        app: cache.adapter.redis
+        system: cache.adapter.apcu
+        pools:
+            static.cache:
+                adapter: cache.app
+                default_lifetime: 108000
+            resolved_address_cache:
+                adapter: cache.app
+                default_lifetime: 108000
+
+services:
+    App\Module\GeoCoordinate\Repository\ResolvedAddressRepositoryInterface:
+        alias: App\Module\GeoCoordinate\Cache\ResolvedAddressRepositoryCache

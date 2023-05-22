@@ -1,0 +1,6 @@
+services:
+  App\Module\GeoCoordinate\Controller\:
+    resource: '%kernel.project_dir%/src/Module/GeoCoordinate/Controller/'
+    tags: [ 'controller.service_arguments' ]
+    autowire: true
+    autoconfigure: true

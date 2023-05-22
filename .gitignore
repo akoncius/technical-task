@@ -12,3 +12,13 @@ docker
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/.php-cs-fixer.cache
+/.phpunit.result.cache
+/build/
+###> phpunit/phpunit ###
+
+###> doctrine/migrations ###
+/migrations/
+###> doctrine/migrations ###
